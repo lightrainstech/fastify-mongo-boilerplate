@@ -9,15 +9,21 @@ const oas = require('fastify-oas')
 const swagger = require('./config/swagger')
 const routes = require('./routes')
 
+const mongoose = require('mongoose')
+
+mongoose
+    .connect(process.env.MONGO_CONN, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true
+    })
+    .then(() => console.log('MongoDB connected...'))
+    .catch(err => console.log(err))
+
 fastify.use(cors())
 
 fastify.register(oas, swagger.options)
 fastify.register(require('fastify-formbody'))
-
-// Loop over each route
-routes.forEach((route, index) => {
-    fastify.route(route)
-})
 
 // Run the server!
 const start = async () => {
